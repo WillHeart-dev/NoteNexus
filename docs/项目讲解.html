@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoteNexus · 项目讲解</title>
+<style>
+  :root{
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --mono: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    --ink:#0f1b2d; --ink2:#3d4f6b; --muted:#7c8ba3;
+    --line:#e4ebf5; --line2:#eef2f9;
+    --bg:#f4f7fb; --card:#ffffff;
+    --brand:#2f6fd0; --brand-d:#1f4f9e; --brand-soft:#eaf2fd;
+    --teal:#0f9c92; --teal-soft:#eaf9f7;
+    --violet:#7357e0; --violet-soft:#f3f0ff;
+    --amber:#c07a10; --amber-soft:#fff7ea;
+    --rose:#cf4c6a; --rose-soft:#fdf0f3;
+    --shadow:0 1px 2px rgba(16,35,64,.04), 0 8px 24px rgba(16,35,64,.05);
+    --shadow-lg:0 2px 6px rgba(16,35,64,.05), 0 18px 48px rgba(16,35,64,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(900px 500px at 12% -8%, #e8f0fd 0%, rgba(232,240,253,0) 60%),
+      radial-gradient(800px 480px at 92% 2%, #e9f7f5 0%, rgba(233,247,245,0) 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px; line-height:1.78;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:#cfe2fb}
+  a{color:var(--brand);text-decoration:none}
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(244,247,251,.82);
+    border-bottom:1px solid rgba(228,235,245,.9);
+  }
+  .nav__in{
+    max-width:1080px; margin:0 auto; padding:0 28px;
+    height:58px; display:flex; align-items:center; gap:22px;
+  }
+  .logo{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.01em;font-size:15px}
+  .logo svg{display:block}
+  .nav__links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+  .nav__links a{
+    color:var(--ink2); font-size:13px; padding:6px 10px; border-radius:8px;
+    transition:background .18s,color .18s;
+  }
+  .nav__links a:hover{background:#e8effa;color:var(--brand-d)}
+
+  /* ---------- layout ---------- */
+  main{max-width:1080px;margin:0 auto;padding:0 28px 90px}
+  section{padding:64px 0 8px}
+  section:first-of-type{padding-top:34px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+  .sec-num{
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;
+    color:var(--brand); background:var(--brand-soft); border:1px solid #d6e6fb;
+    padding:2px 8px;border-radius:6px; transform:translateY(-2px);
+  }
+  h2{font-size:26px;line-height:1.35;letter-spacing:-.015em;margin:0;font-weight:700}
+  .sec-sub{color:var(--ink2);font-size:15px;margin:6px 0 26px;max-width:760px}
+  h3{font-size:17px;margin:34px 0 12px;letter-spacing:-.01em}
+  p{margin:12px 0;color:var(--ink2)}
+  strong{color:var(--ink);font-weight:600}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);padding:24px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding-top:52px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:var(--brand-d);background:#fff;
+    border:1px solid #d9e6f9;border-radius:999px;padding:5px 13px 5px 9px;
+    box-shadow:var(--shadow);
+  }
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(15,156,146,.14)}
+  h1{
+    font-size:52px;line-height:1.08;letter-spacing:-.035em;margin:20px 0 14px;font-weight:750;
+    background:linear-gradient(180deg,#12233c 0%,#254469 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lead{font-size:18px;line-height:1.72;color:var(--ink2);max-width:720px;margin:0 0 26px}
+  .hero p.lead b{color:var(--ink);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
+  .chip{
+    font-family:var(--mono);font-size:12px;color:var(--ink2);
+    background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px 9px;
+  }
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .stat b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--muted)}
+
+  /* ---------- pain / goal ---------- */
+  .pain{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pain .card{padding:22px 22px 20px}
+  .pain .tag{
+    display:inline-block;font-size:11.5px;font-family:var(--mono);color:var(--rose);
+    background:var(--rose-soft);border-radius:5px;padding:1px 7px;margin-bottom:10px;
+  }
+  .pain h4{margin:0 0 6px;font-size:16px}
+  .pain p{margin:0;font-size:14px;color:var(--ink2);line-height:1.7}
+  .bridge{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    margin:26px 0 22px;color:var(--muted);font-size:13px;
+  }
+  .bridge .ln{height:1px;flex:1;background:linear-gradient(90deg,rgba(228,235,245,0),var(--line))}
+  .bridge .ln.r{background:linear-gradient(90deg,var(--line),rgba(228,235,245,0))}
+  .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .goal{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .goal::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--brand)}
+  .goal:nth-child(2)::before{background:var(--teal)}
+  .goal:nth-child(3)::before{background:var(--violet)}
+  .goal h4{margin:0 0 8px;font-size:15.5px}
+  .goal p{margin:0;font-size:14px;color:var(--ink2)}
+  .quote{
+    margin:30px 0 0;padding:20px 24px;border-left:3px solid var(--brand);
+    background:#fff;border-radius:0 12px 12px 0;box-shadow:var(--shadow);
+    font-size:16px;color:var(--ink);line-height:1.8;
+  }
+  .quote span{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+
+  /* ---------- diagram ---------- */
+  .diagram{
+    background:linear-gradient(180deg,#ffffff,#fbfdff);
+    border:1px solid var(--line);border-radius:18px;
+    box-shadow:var(--shadow);padding:18px 18px 10px;margin:18px 0 6px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block;width:100%;min-width:760px;height:auto}
+  .cap{font-size:12.5px;color:var(--muted);margin:8px 4px 0;line-height:1.65}
+  .cap b{color:var(--ink2);font-weight:600}
+
+  /* svg primitives */
+  .dg{font-family:var(--sans)}
+  .dg .box{fill:#fff;stroke:#d7e1f0;stroke-width:1.2}
+  .dg .box-soft{fill:#f4f8ff;stroke:#cfe0f7;stroke-width:1.2}
+  .dg .box-teal{fill:#f0faf8;stroke:#bfe8e3;stroke-width:1.2}
+  .dg .box-violet{fill:#f5f2ff;stroke:#dcd4ff;stroke-width:1.2}
+  .dg .box-warm{fill:#fffaef;stroke:#f0dcb8;stroke-width:1.2}
+  .dg .box-ink{fill:#13233a;stroke:#13233a;stroke-width:1.2}
+  .dg .t{font-size:13px;font-weight:600;fill:#0f1b2d}
+  .dg .t-sm{font-size:11.5px;font-weight:500;fill:#44566f}
+  .dg .t-xs{font-size:10.5px;font-weight:400;fill:#7c8ba3}
+  .dg .t-num{font-size:10px;font-weight:700;fill:#2f6fd0;letter-spacing:.08em}
+  .dg .tn{font-size:12px;font-weight:600;fill:#182a44}
+  .dg .t-on-dark{font-size:13px;font-weight:600;fill:#eaf1fc}
+  .dg .t-on-dark-2{font-size:11px;fill:#91a6c2}
+  .dg .edge{fill:none;stroke:#a8bcd8;stroke-width:1.35}
+  .dg .edge-b{fill:none;stroke:#7aa9e0;stroke-width:1.35}
+  .dg .edge-d{fill:none;stroke:#b9c7db;stroke-width:1.2;stroke-dasharray:4 4}
+
+  /* ---------- module cards ---------- */
+  .mods{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .mod{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);display:flex;gap:16px}
+  .mod__ico{
+    flex:0 0 40px;height:40px;border-radius:11px;display:grid;place-items:center;
+    background:var(--brand-soft);color:var(--brand-d);border:1px solid #dbe8fb;
+  }
+  .mod:nth-child(2n) .mod__ico{background:var(--teal-soft);color:#0a7d75;border-color:#cdeee9}
+  .mod__body{min-width:0}
+  .mod h4{margin:1px 0 4px;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .mod h4 .pkg{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);background:#f6f8fc;border:1px solid var(--line2);border-radius:5px;padding:0 5px}
+  .mod .one{font-size:13.5px;color:var(--ink2);margin:0 0 10px}
+  .mod ul{margin:0;padding-left:16px}
+  .mod li{font-size:13.5px;color:var(--ink2);margin:5px 0;line-height:1.65}
+  .mod li::marker{color:#b9c9e0}
+  .mod li b{color:var(--ink);font-weight:600}
+
+  /* ---------- flow steps ---------- */
+  .steps{counter-reset:s;display:grid;gap:10px;margin-top:14px}
+  .step{
+    display:grid;grid-template-columns:30px 1fr;gap:14px;align-items:start;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 16px;
+  }
+  .step::before{
+    counter-increment:s;content:counter(s);
+    font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--brand);
+    width:24px;height:24px;border-radius:7px;background:var(--brand-soft);
+    display:grid;place-items:center;margin-top:2px;
+  }
+  .step p{margin:0;font-size:14px;line-height:1.7}
+  .step p b{color:var(--ink)}
+
+  /* ---------- code ---------- */
+  pre{
+    margin:14px 0;background:#101d31;color:#d8e3f4;border-radius:12px;
+    padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.75;
+    border:1px solid #1d2f4a;
+  }
+  pre .k{color:#8fb8ff}
+  pre .s{color:#7fd6c2}
+  pre .c{color:#6b7f9c}
+
+  /* ---------- gates (authz) ---------- */
+  .gates{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .gate .no{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em}
+  .gate h4{margin:6px 0 8px;font-size:15px}
+  .gate code{font-family:var(--mono);font-size:12px;background:#f5f8fd;border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--brand-d)}
+  .gate p{font-size:13.5px;margin:8px 0 0;color:var(--ink2)}
+  .matrix{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .matrix table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .matrix th,.matrix td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line2)}
+  .matrix th{background:#f7fafd;font-weight:600;font-size:12.5px;color:var(--ink2)}
+  .matrix tr:last-child td{border-bottom:none}
+  .matrix td:first-child{color:var(--ink2)}
+  .yes{color:var(--teal);font-weight:600}
+  .no-x{color:#b1495f;font-weight:600}
+
+  /* ---------- data model ---------- */
+  .tables{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .tb{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tb h5{margin:0 0 8px;font-size:13px;color:var(--ink);display:flex;justify-content:space-between}
+  .tb h5 span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tb p{margin:0;font-family:var(--mono);font-size:11.5px;line-height:1.85;color:var(--ink2);word-break:break-word}
+
+  /* ---------- metrics ---------- */
+  .mets{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .met{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+  .met b{font-size:26px;letter-spacing:-.02em;display:block;line-height:1.2}
+  .met small{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+  .bars{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .bar-row{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:14px;margin:9px 0;font-size:13px;color:var(--ink2)}
+  .bar{height:7px;border-radius:99px;background:#eef3fa;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#5f9be6,#2f6fd0)}
+  .bar-row:nth-child(2) .bar i{background:linear-gradient(90deg,#4cc4b8,#0f9c92)}
+  .bar-row:nth-child(3) .bar i{background:linear-gradient(90deg,#9c8cf0,#7357e0)}
+  .bar-row:nth-child(4) .bar i{background:linear-gradient(90deg,#e8b45c,#c07a10)}
+  .bar-row em{font-family:var(--mono);font-style:normal;font-size:12px;color:var(--ink);text-align:right}
+
+  /* ---------- tradeoffs ---------- */
+  .tr{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .tr .card{padding:22px 24px}
+  .tr h4{margin:0 0 8px;font-size:15.5px;display:flex;gap:8px;align-items:baseline}
+  .tr h4 span{font-family:var(--mono);font-size:11px;color:var(--brand);background:var(--brand-soft);padding:1px 6px;border-radius:5px}
+  .tr p{margin:0;font-size:13.8px;color:var(--ink2)}
+
+  /* ---------- limits ---------- */
+  .limits{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .limits table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .limits th,.limits td{padding:12px 18px;text-align:left;border-bottom:1px solid var(--line2);vertical-align:top}
+  .limits th{background:#f7fafd;font-size:12.5px;color:var(--ink2);font-weight:600}
+  .limits tr:last-child td{border-bottom:none}
+  .limits td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+  .limits td:last-child{color:var(--muted)}
+
+  footer{
+    max-width:1080px;margin:0 auto;padding:36px 28px 60px;
+    border-top:1px solid var(--line);color:var(--muted);font-size:13px;
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  footer code{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+
+  @media (max-width:900px){
+    h1{font-size:38px}
+    .stats,.pain,.goals,.mets,.gates{grid-template-columns:repeat(2,1fr)}
+    .mods,.tr,.tables{grid-template-columns:1fr}
+    .nav__links{display:none}
+  }
+  @media (max-width:600px){
+    .stats,.pain,.goals,.mets,.gates{grid-template-columns:1fr}
+    main{padding:0 18px 60px}
+    .nav__in{padding:0 18px}
+  }
+  @media print{
+    .nav{display:none}
+    body{background:#fff}
+    .card,.diagram,.mod,.met,.tb{break-inside:avoid;box-shadow:none}
+    section{padding:26px 0 0}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#a8bcd8"/>
+  </marker>
+  <marker id="arrow-b" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#7aa9e0"/>
+  </marker>
+</defs></svg>
+
+<nav class="nav">
+  <div class="nav__in">
+    <div class="logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="1" y="1" width="18" height="18" rx="5.5" fill="#2f6fd0"/>
+        <circle cx="7" cy="7.4" r="1.9" fill="#fff"/>
+        <circle cx="13.2" cy="12.6" r="1.9" fill="#8fe0d6"/>
+        <path d="M8.2 8.7 L12 11.4" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      NoteNexus
+    </div>
+    <div class="nav__links">
+      <a href="#origin">缘起</a>
+      <a href="#arch">全貌</a>
+      <a href="#modules">模块</a>
+      <a href="#flows">核心链路</a>
+      <a href="#authz">权限</a>
+      <a href="#data">数据</a>
+      <a href="#quality">验证</a>
+      <a href="#tradeoffs">取舍</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <div class="eyebrow"><span class="dot"></span>学生学习小组 · 知识共享与 AI 复习平台</div>
+  <h1>把散落的复习资料<br>变成一个可量化的学习系统</h1>
+  <p class="lead">
+    NoteNexus 面向学生的小组学习场景：同学按课程建组，把课件、笔记、真题统一收在组里；
+    AI 基于<b>组内资料</b>回答问题并标注出处；考前把全组资料压成一份结构化讲义；
+    做完题再把正确率折算成<b>知识点掌握度</b>，用图谱排出「先学什么、哪里还薄弱」。
+  </p>
+  <div class="chips">
+    <span class="chip">Java 21</span>
+    <span class="chip">Spring Boot 3.5</span>
+    <span class="chip">Vue 3 + TS</span>
+    <span class="chip">MySQL 8</span>
+    <span class="chip">PostgreSQL + pgvector</span>
+    <span class="chip">Elasticsearch + IK</span>
+    <span class="chip">MinIO</span>
+    <span class="chip">Spring AI / DashScope</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>22</b><span>业务表 · 9 个业务域</span></div>
+    <div class="stat"><b>13</b><span>后端模块 · 前后端分离</span></div>
+    <div class="stat"><b>2</b><span>检索通道 · RRF 融合</span></div>
+    <div class="stat"><b>100%</b><span>评测集检索命中率</span></div>
+  </div>
+</section>
+
+<!-- ══════════════ 01 缘起 ══════════════ -->
+<section id="origin">
+  <div class="sec-head"><span class="sec-num">01</span><h2>缘起：复习时最难的不是学，是「整理」</h2></div>
+  <p class="sec-sub">
+    这个项目不是先有技术再找场景，而是从三件很具体的麻烦事倒推出来的。
+  </p>
+
+  <div class="pain">
+    <div class="card">
+      <div class="tag">痛点 01</div>
+      <h4>资料散在三四个地方</h4>
+      <p>课件在群里、笔记在网盘、真题在聊天记录里。考前想问「上次那份讲到第几章」，得挨个翻，还常常翻到旧版本。</p>
+    </div>
+    <div class="card">
+      <div class="tag">痛点 02</div>
+      <h4>几百页，不知道看哪</h4>
+      <p>期末范围就是整本 PPT。想快速过一遍重点，只能从头翻到尾，或者在群里问「有没有人整理过」——然后没人整理。</p>
+    </div>
+    <div class="card">
+      <div class="tag">痛点 03</div>
+      <h4>学得怎么样，全靠感觉</h4>
+      <p>做过的题、错过的点没有记录。复习计划凭印象安排，容易一直重复已经会的，真正薄弱的地方反而没碰。</p>
+    </div>
+  </div>
+
+  <div class="bridge">
+    <div class="ln"></div>
+    <span>于是把目标拆成三件可落地的事</span>
+    <div class="ln r"></div>
+  </div>
+
+  <div class="goals">
+    <div class="goal">
+      <h4>① 统一管理</h4>
+      <p>以「小组」为唯一容器。资料、问答、讲义、习题、评论全部挂在组下，一组一群、群即边界，不再有「文件到底在哪」这个问题。</p>
+    </div>
+    <div class="goal">
+      <h4>② 让资料能回答</h4>
+      <p>入库后的资料可被检索。提问直接得到带出处的答案；资料里没有的就明确拒答，不编。</p>
+    </div>
+    <div class="goal">
+      <h4>③ 把学习量化</h4>
+      <p>做题正确率 → 知识点掌握度 → 图谱上的强弱分布 → 学习路径的先后顺序。复习从「凭感觉」变成「看数据」。</p>
+    </div>
+  </div>
+
+  <blockquote class="quote">
+    把散落的资料收进一个组，再把组里的资料变成能问答、能复习、能测、能定位薄弱点的学习资产。
+    <span>—— 整个项目的设计主线，也是所有模块取舍的依据</span>
+  </blockquote>
+
+  <p style="margin-top:26px">
+    这条主线决定了后面的技术选择：既然要「统一管理」，就必须有严格的组级数据隔离和一套可靠的文件入库流水线；
+    既然要「能回答」，就必须做检索增强而不是把全文塞给模型；既然要「量化」，就必须把题目、知识点、掌握度连成一条可计算的数据链。
+  </p>
+</section>
+
+<!-- ══════════════ 02 全貌 ══════════════ -->
+<section id="arch">
+  <div class="sec-head"><span class="sec-num">02</span><h2>系统全貌：一个后端，四套存储</h2></div>
+  <p class="sec-sub">
+    前后端分离。后端按 Controller → Service → Mapper 分层，业务规则与权限判断全部收在 Service；
+    外部能力通过 <code style="font-family:var(--mono);font-size:13px">engine</code> 适配层接入，换存储不影响业务代码。
+  </p>
+
+  <div class="diagram">
+    <svg class="dg" viewBox="0 0 1040 438" role="img" aria-label="系统架构图">
+      <rect class="box-soft" x="330" y="6" width="380" height="50" rx="12"/>
+      <text class="t" x="520" y="28" text-anchor="middle">浏览器 · Vue 3 + TypeScript + Vite</text>
+      <text class="t-xs" x="520" y="45" text-anchor="middle">Pinia 状态 · Vue Router · Element Plus · :5173</text>
+
+      <path class="edge-b" d="M520,56 V88" marker-end="url(#arrow-b)"/>
+      <text class="t-xs" x="532" y="76">HTTP · JWT 双令牌</text>
+
+      <rect x="110" y="88" width="820" height="136" rx="14" fill="#f5f9ff" stroke="#cbdcf4" stroke-width="1.2"/>
+      <text class="t-num" x="130" y="110">SPRING BOOT 3 · JAVA 21 · :10001</text>
+
+      <rect class="box" x="134" y="122" width="210" height="48" rx="9"/>
+      <text class="t-sm" x="239" y="143" text-anchor="middle" style="font-weight:600;fill:#0f1b2d">Controller 层</text>
+      <text class="t-xs" x="239" y="159" text-anchor="middle">参数校验 · 响应封装</text>
+
+      <rect class="box" x="386" y="122" width="268" height="48" rx="9"/>
+      <text class="t-sm" x="520" y="143" text-anchor="middle" style="font-weight:600;fill:#0f1b2d">Service 层</text>
+      <text class="t-xs" x="520" y="159" text-anchor="middle">权限守卫 · 业务规则 · 事务边界</text>
+
+      <rect class="box" x="696" y="122" width="210" height="48" rx="9"/>
+      <text class="t-sm" x="801" y="143" text-anchor="middle" style="font-weight:600;fill:#0f1b2d">engine 适配层</text>
+      <text class="t-xs" x="801" y="159" text-anchor="middle">向量 / 全文 / 对象存储</text>
+
+      <path class="edge" d="M344,146 H386" marker-end="url(#arrow)"/>
+      <path class="edge" d="M654,146 H696" marker-end="url(#arrow)"/>
+
+      <text class="t-xs" x="130" y="206">统一响应 ApiResponse · 全局异常 · 慢 SQL 切面 · LLM 用量记账 · MySQL / PG 双数据源</text>
+
+      <path class="edge" d="M520,224 V250" />
+      <path class="edge" d="M110,250 H930"/>
+      <path class="edge" d="M110,250 V276" marker-end="url(#arrow)"/>
+      <path class="edge" d="M315,250 V276" marker-end="url(#arrow)"/>
+      <path class="edge" d="M520,250 V276" marker-end="url(#arrow)"/>
+      <path class="edge" d="M725,250 V276" marker-end="url(#arrow)"/>
+      <path class="edge" d="M930,250 V276" marker-end="url(#arrow)"/>
+
+      <rect class="box-warm" x="20" y="276" width="180" height="100" rx="11"/>
+      <text class="t" x="110" y="302" text-anchor="middle">MySQL 8</text>
+      <text class="t-xs" x="110" y="326" text-anchor="middle">业务主库</text>
+      <text class="t-xs" x="110" y="344" text-anchor="middle">22 张表 · 全部业务数据</text>
+
+      <rect class="box-violet" x="225" y="276" width="180" height="100" rx="11"/>
+      <text class="t" x="315" y="302" text-anchor="middle">PostgreSQL 16</text>
+      <text class="t-xs" x="315" y="326" text-anchor="middle">pgvector 向量检索</text>
+      <text class="t-xs" x="315" y="344" text-anchor="middle">vector(512) · HNSW · 余弦</text>
+
+      <rect class="box-teal" x="430" y="276" width="180" height="100" rx="11"/>
+      <text class="t" x="520" y="302" text-anchor="middle">Elasticsearch 8</text>
+      <text class="t-xs" x="520" y="326" text-anchor="middle">中文倒排 · IK 分词</text>
+      <text class="t-xs" x="520" y="344" text-anchor="middle">ik_max_word · BM25</text>
+
+      <rect class="box" x="635" y="276" width="180" height="100" rx="11"/>
+      <text class="t" x="725" y="302" text-anchor="middle">MinIO</text>
+      <text class="t-xs" x="725" y="326" text-anchor="middle">对象存储</text>
+      <text class="t-xs" x="725" y="344" text-anchor="middle">原始文件 + 生成讲义</text>
+
+      <rect x="840" y="276" width="180" height="100" rx="11" fill="#fbfcfe" stroke="#c3cfdf" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <text class="t" x="930" y="302" text-anchor="middle">DashScope</text>
+      <text class="t-xs" x="930" y="326" text-anchor="middle">qwen-plus · embedding-v3</text>
+      <text class="t-xs" x="930" y="344" text-anchor="middle">外部 API · 生成与向量化</text>
+
+      <text class="t-xs" x="20" y="408">四套存储按能力分工：SQL 管事务、向量库管近似检索、搜索引擎管中文分词、对象存储放大文件。</text>
+    </svg>
+  </div>
+  <p class="cap"><b>为什么不用一套库解决：</b>MySQL 没有成熟的向量索引；全文索引对中文支持差；大文件塞进数据库会拖垮备份与迁移。四套存储各自最擅长的事，用 <b>chunk_id</b> 把三份副本对齐，重建时以 MySQL 为准。</p>
+</section>
+
+<!-- ══════════════ 03 模块 ══════════════ -->
+<section id="modules">
+  <div class="sec-head"><span class="sec-num">03</span><h2>模块功能：八个面向用户的能力</h2></div>
+  <p class="sec-sub">
+    前端入口统一在 <code style="font-family:var(--mono);font-size:13px">/app/*</code>，每个模块对应后端一个包。下面按「解决什么问题 → 具体做了什么」来讲。
+  </p>
+
+  <div class="mods">
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>账号与权限 <span class="pkg">auth · user</span></h4>
+        <p class="one">登录一次，之后所有请求自动带身份；不同角色能看到的东西不同。</p>
+        <ul>
+          <li><b>JWT 双令牌</b>：access token 30 分钟放内存，refresh token 走 httpOnly cookie 14 天，刷新时轮换并作废旧令牌</li>
+          <li><b>两级正交角色</b>：系统级 <b>ADMIN/USER</b> 与组内 <b>OWNER/MEMBER</b> 互不推导，管理员默认进不了业务区</li>
+          <li>密码 BCrypt 加盐哈希；改密后强制下线其他会话</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="9" cy="9" r="3"/><circle cx="17" cy="8" r="2.4"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 14.2c2.6.2 4.5 2.1 4.5 4.8"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>学习小组 <span class="pkg">group</span></h4>
+        <p class="one">一组一群，群就是数据边界。所有资料、问答、习题都只在这个边界内可见。</p>
+        <ul>
+          <li>创建小组、<b>邀请制</b>加入（发邀请 → 受邀人接受）、<b>申请制</b>加入（申请 → 群主审批）</li>
+          <li>群主可改名、移除成员、转让、解散；成员列表带角色标识</li>
+          <li>删除是逻辑删除，历史问答与引用快照保留，避免「资料一删记录就碎」</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6"/><path d="M9 14h6M9 17h4"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>资料中心 <span class="pkg">document · ingestion</span></h4>
+        <p class="one">上传、预览、下载、删除；上传后自动跑一遍解析入库，完成后才能被检索到。</p>
+        <ul>
+          <li><b>分片上传</b>：初始化 → 并发传分片（MD5 校验）→ 合并；中断可续传，同组同文件可秒传</li>
+          <li>支持 <b>txt / md / pdf / docx</b>，解析器工厂按扩展名分发，加格式只需实现一个接口</li>
+          <li>状态机 <b>UPLOADED → PROCESSING → READY / FAILED</b>，失败可一键重试，错误原因落库</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 12.5c0 3.6-3.6 6.5-8 6.5-1 0-2-.15-2.9-.42L4 21l1.3-3.6C4.1 16.1 3.5 14.4 3.5 12.5 3.5 8.9 7.1 6 11.5 6s8.5 2.9 8.5 6.5z"/><path d="M8.5 11.5h6M8.5 14h4"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>知识问答 <span class="pkg">qa</span></h4>
+        <p class="one">问一句，得到一段带出处的答案；资料里没有的，直接说没有。</p>
+        <ul>
+          <li><b>混合检索</b>：向量通道 + 关键词通道并行，RRF 融合排序，再聚类与邻窗扩展补上下文</li>
+          <li><b>四级证据等级</b>（无 / 弱 / 部分 / 充分）随答案返回，让用户知道这句话有多硬</li>
+          <li><b>引用可回溯</b>：每条引用带文件名、切片序号、相关度，点开看原文；反馈（有用/没用）落库统计</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="3" width="12" height="15" rx="2"/><path d="M8 7h4M8 10.5h4M8 14h2.5"/><path d="M18 7h1.5A1.5 1.5 0 0 1 21 8.5V19a2 2 0 0 1-2 2h-8"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>复习讲义 <span class="pkg">review</span></h4>
+        <p class="one">一键把全组资料汇总成一份结构统一的 Markdown 讲义，考前直接看。</p>
+        <ul>
+          <li><b>map / reduce 两阶段</b>：先逐篇提炼要点，再合并成固定六章（导览 / 精讲 / 易混对比 / 例题 / 自测 / 速记卡）</li>
+          <li>全程标注来源，reduce 阶段禁止引入原文没有的内容</li>
+          <li>异步生成 + 前端轮询，关掉页面也能回来下载；产物直接存 MinIO 并可下载 .md</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 12.5l2.3 2.3 4.7-4.9"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>练习题库 <span class="pkg">exercise</span></h4>
+        <p class="one">从资料里自动出题，在线作答、即时判分，按知识点算正确率。</p>
+        <ul>
+          <li>LLM 从切片中抽题：题干 / 选项 / 答案 / 解析 / <b>出处</b>，每题带知识点标签</li>
+          <li>作答写 <b>exercise_attempts</b>，同一题多次作答以最近一次为准</li>
+          <li>统计按「用户 × 小组 × 知识点」聚合——这是后面掌握度计算的数据源</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="6" cy="7" r="2.6"/><circle cx="18" cy="7" r="2.6"/><circle cx="12" cy="18" r="2.6"/>
+          <path d="M8.3 8.7l2.4 6M15.7 8.7l-2.4 6M8.6 7h6.8"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>知识图谱与学习路径 <span class="pkg">graph</span></h4>
+        <p class="one">把资料里的知识点连成图，再按先后关系排出「先学什么」，并标出每个人的薄弱点。</p>
+        <ul>
+          <li>LLM 抽知识点与关系（先修 / 组成 / 相关），每条关系附原文依据；同名概念归一合并</li>
+          <li><b>拓扑分层</b>生成学习路径；检测到环就断环，保证一定出得来；孤立点归入末尾阶段</li>
+          <li>掌握度由做题正确率折算（≥85% 已掌握 / ≥60% 一般 / &lt;60% 薄弱），阶段内薄弱优先</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="mod__ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6.5c0-1 .8-1.8 1.8-1.8h8.4c1 0 1.8.8 1.8 1.8v6.2c0 1-.8 1.8-1.8 1.8H9l-3.5 2.8v-2.8H5.8A1.8 1.8 0 0 1 4 12.7z"/>
+          <path d="M17.5 9h1.3c1 0 1.8.8 1.8 1.8v6c0 1-.8 1.7-1.8 1.7H18V21l-3-2.6h-3.6"/>
+        </svg>
+      </div>
+      <div class="mod__body">
+        <h4>知识库评论 · 运营后台 <span class="pkg">discussion · metrics</span></h4>
+        <p class="one">评论区挂在学习资料模块底部，针对整个知识库发表看法；管理员另有一套用户管理与 ETL 运维视图。</p>
+        <ul>
+          <li>评论区是纯 CRUD，无 AI 参与——一库一评论区，引用回复让建议能落到具体评论</li>
+          <li>后台可查用户列表与状态、<b>ETL 成功/失败/积压</b>统计，异常任务一眼能看到</li>
+          <li>每次 LLM 调用记账：模块、端点、耗时、token、估算成本，便于排查「哪一步贵」</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ 04 核心链路 ══════════════ -->
+<section id="flows">
+  <div class="sec-head"><span class="sec-num">04</span><h2>三条核心链路（技术部分）</h2></div>
+  <p class="sec-sub">
+    上面八个能力里，真正吃技术的是三条链路：资料怎么进得来、问题怎么答得准、讲义怎么出得来。第四小节是图谱的算法。
+  </p>
+
+  <h3>4.1 资料入库：从文件到可检索的切片</h3>
+  <div class="diagram">
+    <svg class="dg" viewBox="0 0 1040 168" role="img" aria-label="ETL 流水线">
+      <rect class="box" x="12" y="26" width="184" height="104" rx="11"/>
+      <rect x="26" y="38" width="26" height="20" rx="6" fill="#eaf2fd"/>
+      <text class="t-num" x="39" y="52" text-anchor="middle">01</text>
+      <text class="t" x="26" y="86">分片上传</text>
+      <text class="t-xs" x="26" y="106">MD5 校验 · 断点续传</text>
+
+      <rect class="box" x="220" y="26" width="184" height="104" rx="11"/>
+      <rect x="234" y="38" width="26" height="20" rx="6" fill="#eaf2fd"/>
+      <text class="t-num" x="247" y="52" text-anchor="middle">02</text>
+      <text class="t" x="234" y="86">解析与清洗</text>
+      <text class="t-xs" x="234" y="106">txt / md / pdf / docx</text>
+
+      <rect class="box" x="428" y="26" width="184" height="104" rx="11"/>
+      <rect x="442" y="38" width="26" height="20" rx="6" fill="#eaf2fd"/>
+      <text class="t-num" x="455" y="52" text-anchor="middle">03</text>
+      <text class="t" x="442" y="86">结构感知切片</text>
+      <text class="t-xs" x="442" y="106">240 / 320 / 32 token</text>
+
+      <rect class="box" x="636" y="26" width="184" height="104" rx="11"/>
+      <rect x="650" y="38" width="26" height="20" rx="6" fill="#eaf2fd"/>
+      <text class="t-num" x="663" y="52" text-anchor="middle">04</text>
+      <text class="t" x="650" y="86">向量化</text>
+      <text class="t-xs" x="650" y="106">embedding-v3 · 512 维</text>
+
+      <rect class="box" x="844" y="26" width="184" height="104" rx="11"/>
+      <rect x="858" y="38" width="26" height="20" rx="6" fill="#eaf2fd"/>
+      <text class="t-num" x="871" y="52" text-anchor="middle">05</text>
+      <text class="t" x="858" y="86">双写索引</text>
+      <text class="t-xs" x="858" y="106">PG 向量 + ES 倒排</text>
+
+      <path class="edge" d="M196,78 H220" marker-end="url(#arrow)"/>
+      <path class="edge" d="M404,78 H428" marker-end="url(#arrow)"/>
+      <path class="edge" d="M612,78 H636" marker-end="url(#arrow)"/>
+      <path class="edge" d="M820,78 H844" marker-end="url(#arrow)"/>
+    </svg>
+  </div>
+  <p class="cap"><b>切片参数：</b>目标 240 token、上限 320、重叠 32。重叠是为了避免一句话被切断后两边都读不懂；结构感知切片优先在标题与段落边界切，而不是按字数硬切。</p>
+
+  <div class="steps">
+    <div class="step"><p><b>三步上传</b>：<code style="font-family:var(--mono);font-size:12.5px">init</code> 返回 uploadId 与已上传分片 → 前端并发传分片 → <code style="font-family:var(--mono);font-size:12.5px">complete</code> 合并落 MinIO 并写 documents 记录。</p></div>
+    <div class="step"><p><b>事务提交后发事件</b>：文件落库成功才触发入库，避免「文件还没传完，后台已经去解析」。</p></div>
+    <div class="step"><p><b>CAS 抢占执行权</b>：后台用条件更新把状态从 <code style="font-family:var(--mono);font-size:12.5px">UPLOADED</code> 改成 <code style="font-family:var(--mono);font-size:12.5px">PROCESSING</code>，影响行数为 0 就放弃——重复事件不会重复处理。</p></div>
+    <div class="step"><p><b>解析 → 清洗 → 切片 → 向量化</b>，向量写 PG、切片原文写 ES 与 MySQL，三者用 <b>chunk_id</b> 对齐。</p></div>
+    <div class="step"><p><b>收尾</b>：成功置 <code style="font-family:var(--mono);font-size:12.5px">READY</code>，失败置 <code style="font-family:var(--mono);font-size:12.5px">FAILED</code> 并记录原因；另有定时任务回收长时间卡在 PROCESSING 的僵尸任务。</p></div>
+  </div>
+
+  <pre><span class="c">-- 抢执行权：只有第一个把状态从 UPLOADED 改走的人能处理</span>
+<span class="k">UPDATE</span> documents <span class="k">SET</span> status = <span class="s">'PROCESSING'</span>
+ <span class="k">WHERE</span> id = #{id} <span class="k">AND</span> status = <span class="s">'UPLOADED'</span>;</pre>
+
+  <h3>4.2 混合检索问答：两条通道，一次融合</h3>
+  <div class="diagram">
+    <svg class="dg" viewBox="0 0 1040 560" role="img" aria-label="混合检索问答流程">
+      <rect class="box-soft" x="30" y="14" width="190" height="48" rx="10"/>
+      <text class="t" x="125" y="44" text-anchor="middle">用户提问</text>
+
+      <path class="edge" d="M220,38 H280" marker-end="url(#arrow)"/>
+
+      <rect class="box" x="280" y="14" width="330" height="48" rx="10"/>
+      <text class="t" x="300" y="34">查询规划（LLM）</text>
+      <text class="t-xs" x="300" y="50">直接 / 改写 / 分解 / 全局 · 最多 3 条检索语句</text>
+
+      <path class="edge" d="M445,62 V88 H280 V110" marker-end="url(#arrow)"/>
+      <path class="edge" d="M445,62 V88 H760 V110" marker-end="url(#arrow)"/>
+
+      <rect class="box-violet" x="100" y="110" width="360" height="64" rx="10"/>
+      <text class="t" x="120" y="136">pgvector 向量通道</text>
+      <text class="t-xs" x="120" y="154">Top-50 · 语义近似 · HNSW 余弦距离</text>
+
+      <rect class="box-teal" x="580" y="110" width="360" height="64" rx="10"/>
+      <text class="t" x="600" y="136">Elasticsearch 关键词通道</text>
+      <text class="t-xs" x="600" y="154">Top-50 · 专有名词 / 编号 / BM25 + IK</text>
+
+      <path class="edge" d="M280,174 V194 H520 V210" marker-end="url(#arrow)"/>
+      <path class="edge" d="M760,174 V194 H520 V210" marker-end="url(#arrow)"/>
+
+      <rect class="box" x="340" y="210" width="360" height="56" rx="10"/>
+      <text class="t" x="360" y="232">RRF 融合排序</text>
+      <text class="t-xs" x="360" y="250">1 /(k+rank) 累加 · k=0 · 归一化到 0~1</text>
+
+      <path class="edge" d="M520,266 V296" marker-end="url(#arrow)"/>
+
+      <rect class="box" x="340" y="296" width="360" height="56" rx="10"/>
+      <text class="t" x="360" y="318">候选选择 · 聚类 · 邻窗扩展</text>
+      <text class="t-xs" x="360" y="336">可选文档覆盖模式 · 前后各扩展 1 个切片</text>
+
+      <path class="edge" d="M520,352 V374 H280 V392" marker-end="url(#arrow)"/>
+      <path class="edge" d="M520,352 V374 H760 V392" marker-end="url(#arrow)"/>
+
+      <rect class="box-warm" x="90" y="392" width="380" height="68" rx="10"/>
+      <text class="t" x="110" y="417">证据不足 → 直接拒答</text>
+      <text class="t-xs" x="110" y="437">不调用生成，返回「资料中未找到」并说明原因</text>
+
+      <rect class="box-soft" x="570" y="392" width="380" height="68" rx="10"/>
+      <text class="t" x="590" y="417">生成答案 + 装配引用</text>
+      <text class="t-xs" x="590" y="437">四级证据等级随答案返回 · 引用带文件名与切片号</text>
+
+      <path class="edge" d="M280,460 V478 H520 V496" marker-end="url(#arrow)"/>
+      <path class="edge" d="M760,460 V478 H520 V496" marker-end="url(#arrow)"/>
+
+      <rect class="box-ink" x="330" y="496" width="380" height="48" rx="10"/>
+      <text class="t-on-dark" x="520" y="518" text-anchor="middle">qa_records · qa_record_citations</text>
+      <text class="t-on-dark-2" x="520" y="534" text-anchor="middle">回答与引用快照落库，资料删除后仍可追溯</text>
+    </svg>
+  </div>
+  <p class="cap">
+    <b>为什么必须融合：</b>向量通道能把「怎么提高召回」匹配到「召回率优化」，但面对课程编号、公式名容易糊；关键词通道正好相反。
+    两路取并集后用 RRF 按名次加权（不看原始分数，只看得第几名），避免两个通道分数量纲不同带来的偏差。
+  </p>
+
+  <div class="steps">
+    <div class="step"><p><b>查询规划先判类型</b>：问题够清楚就直接检索；口语化就改写；多重问题就拆成最多 3 条子查询分别检索后合并；「这个组一共有几份资料」这类全局问题走全量遍历，不走向量检索。</p></div>
+    <div class="step"><p><b>两路并行取 50</b>：向量通道按余弦相似度取近邻，关键词通道按 BM25 打分取前列。</p></div>
+    <div class="step"><p><b>RRF 融合</b>：每个候选的分数是它在各通道名次的倒数之和，同时被两路命中的切片自然排到最前。</p></div>
+    <div class="step"><p><b>聚类 + 邻窗扩展</b>：相邻切片归为一簇，再向前后各扩一片，避免证据被切断成半句话。</p></div>
+    <div class="step"><p><b>证据分级</b>：双通道互证或高分多命中 → 充分；仅单通道或命中数少 → 部分 / 弱；空 → 无，直接拒答。</p></div>
+  </div>
+
+  <pre><span class="c">// RRF：只看得第几名，不看原始分数</span>
+score(d) = Σ<sub>通道 i</sub> 1 / (k + rank<sub>i</sub>(d))      <span class="c">// 实现里 k = 0，归一化后落到 0~1</span></pre>
+
+  <h3>4.3 复习讲义：map / reduce 两阶段</h3>
+  <div class="diagram">
+    <svg class="dg" viewBox="0 0 1040 420" role="img" aria-label="复习讲义生成流程">
+      <rect class="box" x="24" y="46" width="180" height="50" rx="9"/>
+      <text class="t-sm" x="40" y="68" style="font-weight:600;fill:#0f1b2d">资料 A</text>
+      <text class="t-xs" x="40" y="84">12 个切片 · READY</text>
+
+      <rect class="box" x="24" y="116" width="180" height="50" rx="9"/>
+      <text class="t-sm" x="40" y="138" style="font-weight:600;fill:#0f1b2d">资料 B</text>
+      <text class="t-xs" x="40" y="154">28 个切片 · READY</text>
+
+      <rect class="box" x="24" y="186" width="180" height="50" rx="9"/>
+      <text class="t-sm" x="40" y="208" style="font-weight:600;fill:#0f1b2d">资料 C</text>
+      <text class="t-xs" x="40" y="224">9 个切片 · READY</text>
+
+      <path class="edge" d="M204,71 H272" marker-end="url(#arrow)"/>
+      <path class="edge" d="M204,141 H272" marker-end="url(#arrow)"/>
+      <path class="edge" d="M204,211 H272" marker-end="url(#arrow)"/>
+
+      <rect class="box-soft" x="272" y="46" width="252" height="50" rx="9"/>
+      <text class="t-sm" x="288" y="68" style="font-weight:600;fill:#0f1b2d">map · 逐篇提炼</text>
+      <text class="t-xs" x="288" y="84">要点 / 定义 / 公式 / 易错点 + 来源</text>
+
+      <rect class="box-soft" x="272" y="116" width="252" height="50" rx="9"/>
+      <text class="t-sm" x="288" y="138" style="font-weight:600;fill:#0f1b2d">map · 逐篇提炼</text>
+      <text class="t-xs" x="288" y="154">只保留原文存在的内容</text>
+
+      <rect class="box-soft" x="272" y="186" width="252" height="50" rx="9"/>
+      <text class="t-sm" x="288" y="208" style="font-weight:600;fill:#0f1b2d">map · 逐篇提炼</text>
+      <text class="t-xs" x="288" y="224">同一概念多处出现则合并</text>
+
+      <path class="edge" d="M524,71 H560 V141 H600" marker-end="url(#arrow)"/>
+      <path class="edge" d="M524,141 H600" marker-end="url(#arrow)"/>
+      <path class="edge" d="M524,211 H560 V141 H600" marker-end="url(#arrow)"/>
+
+      <rect class="box-violet" x="600" y="116" width="170" height="50" rx="9"/>
+      <text class="t-sm" x="616" y="138" style="font-weight:600;fill:#0f1b2d">reduce · 六章合并</text>
+      <text class="t-xs" x="616" y="154">禁止引入原文外内容</text>
+
+      <path class="edge" d="M770,141 H820" marker-end="url(#arrow)"/>
+
+      <rect class="box" x="820" y="34" width="196" height="252" rx="11"/>
+      <text class="t-num" x="838" y="58">固定六章</text>
+      <rect x="838" y="72" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="81">复习导览</text>
+      <rect x="838" y="104" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="113">知识点精讲</text>
+      <rect x="838" y="136" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="145">易混对比</text>
+      <rect x="838" y="168" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="177">典型例题</text>
+      <rect x="838" y="200" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="209">自测题</text>
+      <rect x="838" y="232" width="6" height="6" rx="2" fill="#7aa9e0"/>
+      <text class="t-sm" x="854" y="241">考前速记卡</text>
+      <text class="t-xs" x="838" y="270">结构由 Java 侧拼装</text>
+
+      <path class="edge" d="M918,286 V318 H520 V340" marker-end="url(#arrow)"/>
+
+      <rect class="box-ink" x="210" y="340" width="620" height="56" rx="10"/>
+      <text class="t-on-dark" x="520" y="364" text-anchor="middle">MarkdownReviewDocumentBuilder</text>
+      <text class="t-on-dark-2" x="520" y="382" text-anchor="middle">一级标题 + 引用块元信息 + 六章正文 → MinIO  review/{groupId}/{id}-{date}.md</text>
+    </svg>
+  </div>
+  <p class="cap">
+    <b>三个刻意的取舍：</b>① 不让模型直接排版——模型只写受控 Markdown，结构由 Java 拼，避免转义错误整份报废；
+    ② 全程溯源——map 阶段就要求标来源，reduce 阶段禁止加料；
+    ③ 异步 + 轮询——生成要几分钟，接口立刻返回 PENDING，前端 3 秒查一次状态。
+  </p>
+
+  <h3>4.4 知识图谱：从知识点到可执行的学习顺序</h3>
+  <div class="diagram">
+    <svg class="dg" viewBox="0 0 1040 400" role="img" aria-label="知识图谱与学习路径分层">
+      <rect x="112" y="16" width="916" height="56" rx="10" fill="#f6f9fe"/>
+      <text class="t-sm" x="98" y="49" text-anchor="end" style="font-weight:600;fill:#2f6fd0">① 入门基础</text>
+
+      <rect x="112" y="88" width="916" height="56" rx="10" fill="#fafcff"/>
+      <text class="t-sm" x="98" y="121" text-anchor="end" style="font-weight:600;fill:#2f6fd0">② 核心概念</text>
+
+      <rect x="112" y="160" width="916" height="56" rx="10" fill="#f6f9fe"/>
+      <text class="t-sm" x="98" y="193" text-anchor="end" style="font-weight:600;fill:#2f6fd0">③ 进阶机制</text>
+
+      <rect x="112" y="232" width="916" height="56" rx="10" fill="#fafcff"/>
+      <text class="t-sm" x="98" y="265" text-anchor="end" style="font-weight:600;fill:#2f6fd0">④ 综合应用</text>
+
+      <rect x="112" y="304" width="916" height="56" rx="10" fill="#f6f9fe"/>
+      <text class="t-sm" x="98" y="337" text-anchor="end" style="font-weight:600;fill:#2f6fd0">⑤ 独立知识点</text>
+
+      <path class="edge" d="M360,64 C360,80 210,80 210,96" marker-end="url(#arrow)"/>
+      <path class="edge" d="M360,64 V96" marker-end="url(#arrow)"/>
+      <path class="edge" d="M210,136 C210,152 220,152 220,168" marker-end="url(#arrow)"/>
+      <path class="edge" d="M360,136 C360,152 390,152 390,168" marker-end="url(#arrow)"/>
+      <path class="edge" d="M220,208 C220,224 225,224 225,240" marker-end="url(#arrow)"/>
+      <path class="edge" d="M390,208 C390,224 405,224 405,240" marker-end="url(#arrow)"/>
+      <path class="edge" d="M300,260 H330" marker-end="url(#arrow)"/>
+      <path class="edge" d="M405,280 C405,296 420,296 420,312" marker-end="url(#arrow)"/>
+      <path class="edge" d="M510,332 H540" marker-end="url(#arrow)"/>
+
+      <rect class="box" x="150" y="24" width="120" height="40" rx="8"/>
+      <circle cx="164" cy="44" r="4" fill="#10b981"/>
+      <text class="tn" x="176" y="48">文档解析</text>
+
+      <rect class="box" x="300" y="24" width="120" height="40" rx="8"/>
+      <circle cx="314" cy="44" r="4" fill="#10b981"/>
+      <text class="tn" x="326" y="48">结构感知切片</text>
+
+      <rect class="box" x="150" y="96" width="120" height="40" rx="8"/>
+      <circle cx="164" cy="116" r="4" fill="#10b981"/>
+      <text class="tn" x="176" y="120">向量嵌入</text>
+
+      <rect class="box" x="300" y="96" width="120" height="40" rx="8"/>
+      <circle cx="314" cy="116" r="4" fill="#c07a10"/>
+      <text class="tn" x="326" y="120">倒排索引</text>
+
+      <rect class="box" x="150" y="168" width="140" height="40" rx="8"/>
+      <circle cx="164" cy="188" r="4" fill="#10b981"/>
+      <text class="tn" x="176" y="192">HNSW 近邻图</text>
+
+      <rect class="box" x="320" y="168" width="140" height="40" rx="8"/>
+      <circle cx="334" cy="188" r="4" fill="#cf4c6a"/>
+      <text class="tn" x="346" y="192">分词与 BM25</text>
+
+      <rect class="box" x="150" y="240" width="150" height="40" rx="8"/>
+      <circle cx="164" cy="260" r="4" fill="#c07a10"/>
+      <text class="tn" x="176" y="264">检索参数基线</text>
+
+      <rect class="box" x="330" y="240" width="150" height="40" rx="8"/>
+      <circle cx="344" cy="260" r="4" fill="#10b981"/>
+      <text class="tn" x="356" y="264">混合检索 RRF</text>
+
+      <rect class="box" x="330" y="312" width="180" height="40" rx="8"/>
+      <circle cx="344" cy="332" r="4" fill="#10b981"/>
+      <text class="tn" x="356" y="336">生成模型 qwen-plus</text>
+
+      <rect class="box" x="540" y="312" width="130" height="40" rx="8"/>
+      <circle cx="554" cy="332" r="4" fill="#94a3b8"/>
+      <text class="tn" x="566" y="336">提示词模板</text>
+    </svg>
+  </div>
+  <p class="cap">
+    节点左边的圆点是<b>掌握度</b>：<span style="color:#10b981">●</span> 已掌握（正确率 ≥ 85%）、
+    <span style="color:#c07a10">●</span> 一般（≥ 60%）、<span style="color:#cf4c6a">●</span> 薄弱（&lt; 60%）、
+    <span style="color:#94a3b8">●</span> 未检测。阶段内按「薄弱 → 未检测 → 一般 → 已掌握」排序，所以每个阶段最前面就是最该补的。
+  </p>
+
+  <div class="steps">
+    <div class="step"><p><b>抽取</b>：每份资料取前 30 个切片（上限 1 万字符），LLM 抽知识点与三类关系——<b>先修</b>（学 A 才能学 B）、<b>组成</b>（A 是 B 的一部分）、<b>相关</b>。每条关系必须附原文依据，防止模型凭空连线。</p></div>
+    <div class="step"><p><b>归一</b>：概念名转成 node_key（小写、去空格标点），多份资料命中同一个概念就合并释义、取更高重要度、累加来源。</p></div>
+    <div class="step"><p><b>原子替换</b>：单事务内先删旧边再删旧点再写新图，避免中途失败留下半张图。</p></div>
+    <div class="step"><p><b>分层</b>：以先修边做 Kahn 拓扑排序，每轮取出「前置全部满足」的节点作为同一阶段；组成边反向视为弱前置（先整体后局部），这样即使模型只抽到层级结构，路径也不会退化成一个阶段。</p></div>
+    <div class="step"><p><b>断环与兜底</b>：有环时取入度最小的节点强行解锁并标记 <code style="font-family:var(--mono);font-size:12.5px">cycleDetected</code>；完全孤立的知识点归入末尾「独立知识点」阶段，保证任何图都能出路径。</p></div>
+  </div>
+</section>
+
+<!-- ══════════════ 05 权限 ══════════════ -->
+<section id="authz">
+  <div class="sec-head"><span class="sec-num">05</span><h2>权限：三道关口，不依赖前端藏按钮</h2></div>
+  <p class="sec-sub">
+    「统一管理」的前提是数据不能乱串。所有越权判断都在 Service 层，前端只负责不显示用不了的入口，不作为安全边界。
+  </p>
+
+  <div class="gates">
+    <div class="gate">
+      <div class="no">GATE 01</div>
+      <h4>系统角色不进业务区</h4>
+      <p><code>requireBusinessUser()</code> 把 ADMIN 挡在小组、资料、问答之外。管理员没有业务数据的天然访问权——避免「运维账号能看所有学生资料」。</p>
+    </div>
+    <div class="gate">
+      <div class="no">GATE 02</div>
+      <h4>读权限统一入口</h4>
+      <p><code>requireGroupReadable(groupId)</code> 校验当前用户是该组成员（OWNER 或 MEMBER）。资料、问答、练习、讲义、图谱全部走这一个方法。</p>
+    </div>
+    <div class="gate">
+      <div class="no">GATE 03</div>
+      <h4>写权限单独收口</h4>
+      <p><code>requireGroupOwner(groupId)</code> 只给群主，用于改名、邀请审批、移除成员、删除他人资料等跨成员操作。</p>
+    </div>
+  </div>
+
+  <div class="matrix">
+    <table>
+      <thead><tr><th>身份</th><th>小组管理</th><th>资料 / 问答 / 练习 / 图谱</th><th>运营后台</th></tr></thead>
+      <tbody>
+        <tr><td>ADMIN（系统管理员）</td><td class="no-x">✕ 不进业务区</td><td class="no-x">✕</td><td class="yes">✓ 用户与 ETL 统计</td></tr>
+        <tr><td>OWNER（群主）</td><td class="yes">✓</td><td class="yes">✓</td><td class="no-x">✕</td></tr>
+        <tr><td>MEMBER（组员）</td><td class="no-x">✕</td><td class="yes">✓</td><td class="no-x">✕</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">资源伪造（不存在的 ID、别人的文档 ID）统一返回「不存在或已删除」，不泄漏资源是否存在——这让攻击者无法通过错误信息探测他人的数据。</p>
+</section>
+
+<!-- ══════════════ 06 数据 ══════════════ -->
+<section id="data">
+  <div class="sec-head"><span class="sec-num">06</span><h2>数据模型：22 张表，九个域</h2></div>
+  <p class="sec-sub">所有业务数据在 MySQL；向量在 PG、倒排索引在 ES、文件在 MinIO，通过 <code style="font-family:var(--mono);font-size:13px">chunk_id</code> / 对象键对齐。</p>
+
+  <div class="tables">
+    <div class="tb"><h5>账号 <span>2</span></h5><p>users<br>user_refresh_tokens</p></div>
+    <div class="tb"><h5>小组 <span>4</span></h5><p>notenexus_groups<br>group_memberships<br>group_invitations<br>group_join_requests</p></div>
+    <div class="tb"><h5>资料 <span>5</span></h5><p>documents<br>document_upload_sessions<br>document_upload_chunks<br>document_chunks<br>ingestion_jobs</p></div>
+    <div class="tb"><h5>问答 <span>3</span></h5><p>qa_records<br>qa_record_citations<br>qa_feedback</p></div>
+    <div class="tb"><h5>讲义 <span>1</span></h5><p>review_documents</p></div>
+    <div class="tb"><h5>练习 <span>2</span></h5><p>exercise_questions<br>exercise_attempts</p></div>
+    <div class="tb"><h5>图谱 <span>3</span></h5><p>knowledge_graph_nodes<br>knowledge_graph_edges<br>knowledge_graph_build_tasks</p></div>
+    <div class="tb"><h5>评论 <span>1</span></h5><p>group_discussion_messages</p></div>
+    <div class="tb"><h5>记账 <span>1</span></h5><p>llm_usage_records</p></div>
+  </div>
+
+  <p style="margin-top:20px">
+    几个值得说的设计：<b>引用快照</b>（<code style="font-family:var(--mono);font-size:13px">qa_record_citations</code> 存回答当时的切片摘要与分数，资料删了历史问答仍可追溯）、
+    <b>切片双写</b>（MySQL 存原文与元数据，向量进 PG、倒排进 ES，重建索引以 MySQL 为准）、
+    <b>逻辑删除</b>（资料与讲义走 <code style="font-family:var(--mono);font-size:13px">deleted</code> 标记，物理清理异步做）。
+  </p>
+</section>
+
+<!-- ══════════════ 07 验证 ══════════════ -->
+<section id="quality">
+  <div class="sec-head"><span class="sec-num">07</span><h2>验证：不是「跑起来了」，是有数</h2></div>
+  <p class="sec-sub">用固定评测集跑检索与问答，用越权脚本跑权限，用并发压测跑接口——三组数字都有可复现的脚本。</p>
+
+  <div class="mets">
+    <div class="met"><b style="color:#2f6fd0">100%</b><small>检索命中率 · 46 条可答题</small></div>
+    <div class="met"><b style="color:#0f9c92">0.942</b><small>MRR · 正确片段的平均名次</small></div>
+    <div class="met"><b style="color:#7357e0">100%</b><small>拒答正确率 · 4 条无答案题</small></div>
+    <div class="met"><b style="color:#c07a10">0%</b><small>权限泄漏率 · 6 条跨组题</small></div>
+  </div>
+
+  <div class="bars">
+    <div class="bar-row"><span>检索命中率</span><div class="bar"><i style="width:100%"></i></div><em>100%</em></div>
+    <div class="bar-row"><span>MRR（归一）</span><div class="bar"><i style="width:94.2%"></i></div><em>0.942</em></div>
+    <div class="bar-row"><span>越权用例通过</span><div class="bar"><i style="width:100%"></i></div><em>18/18</em></div>
+    <div class="bar-row"><span>业务接口 P95</span><div class="bar"><i style="width:15%"></i></div><em>&lt;150ms</em></div>
+  </div>
+
+  <p class="cap" style="margin-top:14px">
+    问答延迟 <b>P50 1.89s / P95 3.72s</b>（单机串行，含一次 LLM 生成）；越权用例 <b>18/18 通过</b>（未认证 5 / 跨组 9 / 伪造 3 / 角色 1）。
+    复现方式：<code style="font-family:var(--mono);font-size:12px">python evaluation/run_eval.py eval</code>、<code style="font-family:var(--mono);font-size:12px">python security/test_authz.py</code>。
+  </p>
+</section>
+
+<!-- ══════════════ 08 取舍 ══════════════ -->
+<section id="tradeoffs">
+  <div class="sec-head"><span class="sec-num">08</span><h2>几个关键取舍</h2></div>
+  <p class="sec-sub">这部分是项目里真正做过判断的地方，也是最容易被追问的点。</p>
+
+  <div class="tr">
+    <div class="card">
+      <h4><span>01</span>四套存储 vs 一套数据库</h4>
+      <p>多一套存储就多一份运维成本，但换来了向量检索与中文分词的真实能力。做法是把复杂度收在 <code style="font-family:var(--mono);font-size:12.5px">engine</code> 适配层之后，业务侧只依赖接口，将来换向量库不动业务代码。</p>
+    </div>
+    <div class="card">
+      <h4><span>02</span>混合检索 vs 只用向量</h4>
+      <p>只用向量在「第 3 章那个公式」这类问题上会失手；只用关键词在「换个说法问同一件事」时召回很差。两路都跑再融合，代价是延迟增加约 100ms，换来命中率与鲁棒性。</p>
+    </div>
+    <div class="card">
+      <h4><span>03</span>宁可拒答 vs 尽量回答</h4>
+      <p>学习场景里，编造的答案比没有答案更糟——学生会背错。所以证据不足时直接返回「资料中未找到」，并把四级证据等级显式告诉用户，而不是让模型硬编一段。</p>
+    </div>
+    <div class="card">
+      <h4><span>04</span>结构由代码拼 vs 让模型排版</h4>
+      <p>早期试过让模型直接输出 LaTeX/HTML，一个转义符号错了整份产物就废。现在模型只产受控 Markdown，标题、元信息、章节顺序由 Java 拼装，稳定性换了一点点灵活性，值得。</p>
+    </div>
+  </div>
+
+  <h3>已知限制</h3>
+  <div class="limits">
+    <table>
+      <thead><tr><th>限制</th><th>影响</th><th>后续</th></tr></thead>
+      <tbody>
+        <tr><td>讲义生成无僵尸回收</td><td>服务在生成中重启，记录会停在 GENERATING</td><td>参照 ETL 的 CAS + 定时回收补齐</td></tr>
+        <tr><td>答案正确率用关键词匹配</td><td>措辞不同即判错，存在低估</td><td>引入 LLM-as-judge</td></tr>
+        <tr><td>登录无频率限制</td><td>BCrypt 慢哈希可被当 DoS 放大点</td><td>加同 IP 限流</td></tr>
+        <tr><td>解析格式限 txt/md/pdf/docx</td><td>上传 PPT 会被拒</td><td>接入 poi-ooxml 的 XMLSlideShow</td></tr>
+        <tr><td>单机部署</td><td>无副本、无高可用</td><td>容器化后按需扩</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>NoteNexus · 学生学习资料共享与 AI 复习平台</div>
+  <div><code>docs/技术文档.md</code> · <code>README.md</code></div>
+</footer>
+
+</body>
+</html>
